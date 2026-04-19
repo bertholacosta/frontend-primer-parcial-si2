@@ -41,6 +41,10 @@ export class AuthService {
     );
   }
 
+  registerTaller(data: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/registrar-taller`, data);
+  }
+
   logout() {
     localStorage.removeItem('access_token');
     localStorage.removeItem('role');

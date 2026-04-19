@@ -91,6 +91,19 @@ import { AuthService } from '../../core/services/auth.service';
                 </div>
               }
 
+              <!-- Card 4 -->
+              @if (hasPermiso('Gestionar Mecanicos') || role === 'Taller') {
+                <div routerLink="/dashboard/mecanicos" class="bg-white border-2 border-dashed border-gray-200 rounded-xl p-6 hover:border-orange-400 hover:bg-orange-50 transition-colors cursor-pointer group">
+                  <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-lg flex items-center justify-center mb-4 group-hover:bg-orange-600 group-hover:text-white transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.673 4.673a2.25 2.25 0 01-3.182 0l-1.06-1.06a2.25 2.25 0 010-3.182l4.673-4.673m-1.458 5.75l-4.5 4.5M15.75 3.75l-6 6" />
+                    </svg>
+                  </div>
+                  <h3 class="text-lg font-bold text-gray-900 group-hover:text-orange-900">Personal Técnico</h3>
+                  <p class="text-sm text-gray-500 mt-2">Gestionar mecánicos, asignaciones operativas y datos de personal del taller.</p>
+                </div>
+              }
+
             </div>
           </div>
         </div>
