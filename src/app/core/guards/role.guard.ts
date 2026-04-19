@@ -11,13 +11,23 @@ export const roleGuard: CanActivateFn = (route, state) => {
     return router.parseUrl('/login');
   }
 
-  // 2. Validar que tenga el rol permitido
-  const role = authService.getRole();
-  if (role === 'Administrador' || role === 'Taller') {
-    return true;
+  // 2. Extraer permisos requeridos para esta sub-ruta y validar restrictivamente
+  const requiredPermiso = route.data?.['requiredPermiso'];
+  
+  if (requiredPermiso) {
+    if (authService.hasPermiso(requiredPermiso)) {
+      return true;
+    }
+  } else {
+    // Si no exige permiso especial particular pero está logueado y llegamos aquí permitimos (ej. el padre Dashboard vacio)
+    // Pero si queremos ser estrictos para todas las sub-secciones, validaremos solo el contenedor maestro.
+    const role = authService.getRole();
+    if (role === 'Administrador' || role === 'Taller') {
+      return true;
+    }
   }
 
-  // Si no tiene el rol exacto, cerrar sesión (quizá era un Conductor) y redirigir
-  authService.logout();
-  return router.parseUrl('/login');
+  // Denegar acceso y redireccionar a pagina segura
+  router.navigate(['/dashboard']);
+  return false;
 };

@@ -13,6 +13,9 @@ export class AuthService {
 
   private currentUserRoleSubject = new BehaviorSubject<string | null>(this.getStoredRole());
   currentUserRole$ = this.currentUserRoleSubject.asObservable();
+  
+  private currentPermisosSubject = new BehaviorSubject<string[]>(this.getStoredPermisos());
+  currentPermisos$ = this.currentPermisosSubject.asObservable();
 
   login(correo: string, password: string): Observable<any> {
     const formData = new FormData();
@@ -28,6 +31,10 @@ export class AuthService {
               localStorage.setItem('role', response.role);
               this.currentUserRoleSubject.next(response.role);
             }
+            if (response.permisos) {
+              localStorage.setItem('permisos', JSON.stringify(response.permisos));
+              this.currentPermisosSubject.next(response.permisos);
+            }
           }
         }
       })
@@ -37,7 +44,9 @@ export class AuthService {
   logout() {
     localStorage.removeItem('access_token');
     localStorage.removeItem('role');
+    localStorage.removeItem('permisos');
     this.currentUserRoleSubject.next(null);
+    this.currentPermisosSubject.next([]);
     this.router.navigate(['/login']);
   }
 
@@ -47,6 +56,21 @@ export class AuthService {
 
   private getStoredRole(): string | null {
     return localStorage.getItem('role');
+  }
+
+  private getStoredPermisos(): string[] {
+    const raw = localStorage.getItem('permisos');
+    if (!raw) return [];
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return [];
+    }
+  }
+
+  hasPermiso(permiso: string): boolean {
+    const permisos = this.currentPermisosSubject.value;
+    return permisos.includes(permiso);
   }
 
   isLoggedIn(): boolean {
