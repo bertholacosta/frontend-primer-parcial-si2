@@ -104,6 +104,17 @@ import { AuthService } from '../../core/services/auth.service';
                 </div>
               }
 
+              <!-- Card 5: Bitacora — visible para todos -->
+              <div routerLink="/dashboard/bitacora" class="bg-white border-2 border-dashed border-gray-200 rounded-xl p-6 hover:border-violet-400 hover:bg-violet-50 transition-colors cursor-pointer group">
+                <div class="w-12 h-12 bg-violet-100 text-violet-600 rounded-lg flex items-center justify-center mb-4 group-hover:bg-violet-600 group-hover:text-white transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 group-hover:text-violet-900">Bitácora</h3>
+                <p class="text-sm text-gray-500 mt-2">Consultar el historial de actividades y operaciones realizadas en el sistema.</p>
+              </div>
+
             </div>
           </div>
         </div>

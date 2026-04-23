@@ -8,6 +8,7 @@ import { roleGuard } from './core/guards/role.guard';
 import { UsuariosList } from './features/usuarios/usuarios-list/usuarios-list';
 import { RolesListComponent } from './features/roles/roles-list/roles-list.component';
 import { MecanicosListComponent } from './features/mecanicos/mecanicos-list/mecanicos-list.component';
+import { BitacoraListComponent } from './features/bitacora/bitacora-list/bitacora-list.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -19,7 +20,8 @@ export const routes: Routes = [
     children: [
       { path: 'usuarios', component: UsuariosList, data: { requiredPermiso: 'Ver Usuarios' } },
       { path: 'roles', component: RolesListComponent, data: { requiredPermiso: 'Gestionar Roles' } },
-      { path: 'mecanicos', component: MecanicosListComponent, data: { requiredPermiso: 'Gestionar Mecanicos' } }
+      { path: 'mecanicos', component: MecanicosListComponent, data: { requiredPermiso: 'Gestionar Mecanicos' } },
+      { path: 'bitacora', component: BitacoraListComponent, data: { requiredPermiso: 'Ver Bitacora' } }
     ]
   },
   { path: '', component: LandingComponent, pathMatch: 'full' },
