@@ -73,6 +73,10 @@ export class AuthService {
   }
 
   hasPermiso(permiso: string): boolean {
+    // El Administrador tiene acceso total a todas las funcionalidades
+    if (this.getRole() === 'Administrador') {
+      return true;
+    }
     const permisos = this.currentPermisosSubject.value;
     return permisos.includes(permiso);
   }

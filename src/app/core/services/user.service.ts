@@ -31,7 +31,7 @@ export class UserService {
   }
 
   createUser(userData: any): Observable<any> {
-    return this.http.post<any>('http://127.0.0.1:8000/auth/registrar', userData);
+    return this.http.post<any>(this.apiUrl, userData);
   }
 
   updateUser(id: number, userData: any): Observable<any> {
