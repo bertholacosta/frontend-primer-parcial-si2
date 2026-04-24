@@ -28,6 +28,12 @@ import { AuthService } from '../../core/services/auth.service';
                 <span class="w-2 h-2 rounded-full bg-blue-500"></span>
                 {{ role }}
               </span>
+              <button routerLink="/dashboard/perfil" class="text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2" title="Mi Perfil">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                </svg>
+                Mi Perfil
+              </button>
               <button (click)="logout()" class="text-gray-500 hover:text-red-600 hover:bg-red-50 px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
@@ -113,6 +119,17 @@ import { AuthService } from '../../core/services/auth.service';
                 </div>
                 <h3 class="text-lg font-bold text-gray-900 group-hover:text-violet-900">Bitácora</h3>
                 <p class="text-sm text-gray-500 mt-2">Consultar el historial de actividades y operaciones realizadas en el sistema.</p>
+              </div>
+
+              <!-- Card 6: Mi Perfil — visible para todos -->
+              <div routerLink="/dashboard/perfil" class="bg-white border-2 border-dashed border-gray-200 rounded-xl p-6 hover:border-indigo-400 hover:bg-indigo-50 transition-colors cursor-pointer group">
+                <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center mb-4 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                  </svg>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 group-hover:text-indigo-900">Mi Perfil</h3>
+                <p class="text-sm text-gray-500 mt-2">Gestionar tu información personal, contraseña y configuración de cuenta.</p>
               </div>
 
             </div>
