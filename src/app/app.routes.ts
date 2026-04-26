@@ -2,6 +2,8 @@ import { Routes } from '@angular/router';
 import { LandingComponent } from './features/landing/landing.component';
 import { LoginComponent } from './features/login/login.component';
 import { RegisterTallerComponent } from './features/auth/register-taller/register-taller.component';
+import { ForgotPasswordComponent } from './features/auth/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './features/auth/reset-password/reset-password.component';
 import { DashboardComponent } from './features/dashboard/dashboard.component';
 import { roleGuard } from './core/guards/role.guard';
 
@@ -14,6 +16,8 @@ import { SolicitudesPendientesComponent } from './features/solicitudes-pendiente
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
+  { path: 'recuperar-password', component: ForgotPasswordComponent },
+  { path: 'restablecer-password', component: ResetPasswordComponent },
   { path: 'registro-taller', component: RegisterTallerComponent },
   { 
     path: 'dashboard', 

@@ -140,10 +140,21 @@ import * as L from 'leaflet';
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3.5 h-3.5">
                               <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.41a2.25 2.25 0 013.182 0l2.909 2.91m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
                             </svg>
-                            Con fotos
+                            {{ getPhotoUrls(inc).length }} foto(s)
                           </span>
                         }
                       </div>
+
+                      <!-- Photo Gallery -->
+                      @if (hasPhotos(inc)) {
+                        <div class="mt-3 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
+                          @for (url of getPhotoUrls(inc); track url) {
+                            <div class="aspect-square rounded-lg overflow-hidden border border-gray-200 cursor-pointer hover:opacity-80 hover:border-blue-300 transition-all" (click)="openLightbox(url)">
+                              <img [src]="url" alt="Evidencia" class="w-full h-full object-cover" loading="lazy">
+                            </div>
+                          }
+                        </div>
+                      }
                     }
 
                     <!-- Action: Ofrecer Cotización -->
@@ -236,6 +247,18 @@ import * as L from 'leaflet';
         </div>
       </div>
     }
+
+    <!-- Lightbox -->
+    @if (lightboxUrl) {
+      <div class="fixed inset-0 flex items-center justify-center p-4 bg-black/80" style="z-index: 20000" (click)="closeLightbox()">
+        <button class="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors" (click)="closeLightbox()">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+        <img [src]="lightboxUrl" alt="Evidencia" class="max-w-full max-h-[90vh] rounded-xl shadow-2xl object-contain" (click)="$event.stopPropagation()">
+      </div>
+    }
   `,
   styles: [`
     @keyframes spin {
@@ -266,6 +289,7 @@ export class SolicitudesPendientesComponent implements OnInit, OnDestroy, AfterV
   tallerId: number | null = null;
   tallerCoords: [number, number] | null = null;
   tallerLoaded = false;
+  lightboxUrl: string | null = null;
 
   // Maps tracking
   private cardMaps: Map<number, L.Map> = new Map();
@@ -472,6 +496,34 @@ export class SolicitudesPendientesComponent implements OnInit, OnDestroy, AfterV
 
   hasPhotos(inc: IncidenteDetalle): boolean {
     return inc.evidencias?.some(e => !!e.fotos) || false;
+  }
+
+  getPhotoUrls(inc: IncidenteDetalle): string[] {
+    const urls: string[] = [];
+    for (const ev of inc.evidencias || []) {
+      if (!ev.fotos) continue;
+      const parts = ev.fotos.split('|||').filter(p => p.trim());
+      for (const p of parts) {
+        const trimmed = p.trim();
+        if (trimmed.startsWith('/uploads')) {
+          urls.push('http://127.0.0.1:8000' + trimmed);
+        } else if (trimmed.startsWith('http')) {
+          urls.push(trimmed);
+        } else if (trimmed.length > 100) {
+          // Base64 data
+          urls.push('data:image/jpeg;base64,' + trimmed);
+        }
+      }
+    }
+    return urls;
+  }
+
+  openLightbox(url: string) {
+    this.lightboxUrl = url;
+  }
+
+  closeLightbox() {
+    this.lightboxUrl = null;
   }
 
   ofrecerCotizacion(inc: IncidenteDetalle) {
