@@ -4,10 +4,12 @@ import { IncidenteService, IncidenteDetalle } from '../../core/services/incident
 import { ProfileService } from '../../core/services/profile.service';
 import * as L from 'leaflet';
 
+import { FormsModule } from '@angular/forms';
+
 @Component({
   selector: 'app-solicitudes-pendientes',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   template: `
     <div class="bg-gray-50 flex flex-col gap-6 p-4 md:p-8 min-h-full">
       <div class="bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:rounded-2xl border border-gray-100 flex-1 flex flex-col">
@@ -126,6 +128,31 @@ import * as L from 'leaflet';
                       </div>
                     }
 
+                    <!-- Análisis IA -->
+                    @if (inc.analisis_ia) {
+                      <div class="mt-4 bg-indigo-50/50 border border-indigo-100 rounded-xl p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-indigo-600">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.428-1.428L13.5 18.75l1.178-.394a2.25 2.25 0 001.428-1.428L16.5 15.75l.394 1.178a2.25 2.25 0 001.428 1.428l1.178.394-1.178.394a2.25 2.25 0 00-1.428 1.428z" />
+                          </svg>
+                          <h4 class="font-bold text-indigo-900 text-sm">Análisis Inteligente</h4>
+                          
+                          @if (inc.analisis_ia.NivelPrioridad) {
+                            <span class="ml-auto inline-flex items-center rounded-md bg-indigo-100 px-2 py-1 text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-700/10">
+                              Gravedad: {{ inc.analisis_ia.NivelPrioridad }}
+                            </span>
+                          }
+                        </div>
+                        
+                        @if (inc.analisis_ia.Resumen) {
+                          <p class="text-sm text-indigo-800/80 leading-relaxed">{{ inc.analisis_ia.Resumen }}</p>
+                        }
+                        @if (inc.analisis_ia.Clasificacion) {
+                          <p class="text-sm text-indigo-800/80 leading-relaxed mt-2"><span class="font-semibold">Recomendación:</span> {{ inc.analisis_ia.Clasificacion }}</p>
+                        }
+                      </div>
+                    }
+
                     <!-- Evidencias count -->
                     @if (inc.evidencias.length > 0) {
                       <div class="mt-3 flex items-center gap-2">
@@ -161,11 +188,18 @@ import * as L from 'leaflet';
                     <div class="mt-5 pt-4 border-t border-gray-100 flex justify-end">
                       <button 
                         (click)="ofrecerCotizacion(inc)" 
-                        [disabled]="isAssigning === inc.id"
+                        [disabled]="isAssigning === inc.id || yaCotizado(inc)"
+                        [class.from-emerald-600]="yaCotizado(inc)"
+                        [class.to-teal-600]="yaCotizado(inc)"
                         class="px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 transform shadow-md bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 flex items-center gap-2">
                         @if (isAssigning === inc.id) {
                           <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                          Asignando...
+                          Procesando...
+                        } @else if (yaCotizado(inc)) {
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          Oferta Enviada
                         } @else {
                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085" />
@@ -230,6 +264,31 @@ import * as L from 'leaflet';
               </div>
             }
 
+            <div class="space-y-4 mb-6">
+              <div>
+                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">Monto Aproximado (BOB)</label>
+                <div class="relative">
+                  <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-semibold">Bs.</span>
+                  <input 
+                    type="number" 
+                    [(ngModel)]="montoOferta" 
+                    placeholder="0.00"
+                    class="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all font-semibold text-gray-700"
+                  >
+                </div>
+              </div>
+              
+              <div>
+                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">Mensaje o Detalle (Opcional)</label>
+                <textarea 
+                  [(ngModel)]="mensajeOferta" 
+                  placeholder="Ej: Incluye remolque y diagnóstico inicial..."
+                  rows="3"
+                  class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-sm text-gray-700"
+                ></textarea>
+              </div>
+            </div>
+
             @if (modalError) {
               <div class="mb-4 bg-red-50 text-red-600 px-3 py-2 rounded-lg text-sm border border-red-100">{{ modalError }}</div>
             }
@@ -238,8 +297,10 @@ import * as L from 'leaflet';
               <button type="button" (click)="closeModal()" class="px-5 py-2.5 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors font-medium">Cancelar</button>
               <button 
                 (click)="confirmarAsignacion()" 
-                [disabled]="isAssigning"
-                class="px-5 py-2.5 rounded-xl font-semibold bg-blue-600 text-white hover:bg-blue-700 shadow-sm disabled:opacity-50 transition-colors">
+                [disabled]="isAssigning || yaCotizado(selectedIncidente!)"
+                [class.from-emerald-600]="yaCotizado(selectedIncidente!)"
+                [class.to-teal-600]="yaCotizado(selectedIncidente!)"
+                class="px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 transform shadow-md bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 flex items-center gap-2">
                 @if (isAssigning) { Procesando... } @else { Confirmar Servicio }
               </button>
             </div>
@@ -290,6 +351,10 @@ export class SolicitudesPendientesComponent implements OnInit, OnDestroy, AfterV
   tallerCoords: [number, number] | null = null;
   tallerLoaded = false;
   lightboxUrl: string | null = null;
+
+  // Form cotización
+  montoOferta: number | null = null;
+  mensajeOferta: string = '';
 
   // Maps tracking
   private cardMaps: Map<number, L.Map> = new Map();
@@ -535,6 +600,8 @@ export class SolicitudesPendientesComponent implements OnInit, OnDestroy, AfterV
       this.modalMap = null;
     }
     this.isModalOpen = true;
+    this.montoOferta = null;
+    this.mensajeOferta = '';
   }
 
   closeModal() {
@@ -554,18 +621,30 @@ export class SolicitudesPendientesComponent implements OnInit, OnDestroy, AfterV
       return;
     }
 
+    if (!this.montoOferta || this.montoOferta <= 0) {
+      this.modalError = 'Debes ingresar un monto válido para la cotización.';
+      return;
+    }
+
     this.isAssigning = this.selectedIncidente.id;
-    this.incidenteService.asignarTaller(this.selectedIncidente.id, this.tallerId).subscribe({
+    this.incidenteService.ofrecerCotizacion(this.selectedIncidente.id, this.montoOferta, this.mensajeOferta).subscribe({
       next: () => {
         this.isAssigning = null;
         this.closeModal();
-        this.loadSolicitudes(); // Refresh — the assigned one should disappear
+        this.loadSolicitudes(); // Refresh — the offered one will still be there but maybe we want to filter it or show it as offered
+        // En este sistema, al ofrecer cotización el incidente sigue en "Reportado" para otros, 
+        // pero para este taller ya debería mostrar que envió oferta.
       },
       error: (err) => {
         this.isAssigning = null;
-        this.modalError = err.error?.detail || 'Error al asignar el taller a este incidente.';
+        this.modalError = err.error?.detail || 'Error al enviar la cotización.';
       }
     });
+  }
+
+  yaCotizado(inc: IncidenteDetalle): boolean {
+    if (!inc.cotizaciones || !this.tallerId) return false;
+    return inc.cotizaciones.some(c => c.taller_id === this.tallerId && c.estado !== 'Rechazada');
   }
 
   private fetchRoute(from: [number, number], to: [number, number], map: L.Map) {

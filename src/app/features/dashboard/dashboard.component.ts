@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, RouterOutlet, Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-dashboard',
@@ -26,7 +27,7 @@ import { AuthService } from '../../core/services/auth.service';
             <div class="flex items-center gap-4">
               <span class="bg-blue-50 text-blue-700 border border-blue-200 px-3 py-1 rounded-full text-sm font-semibold hidden sm:inline-flex items-center gap-1.5">
                 <span class="w-2 h-2 rounded-full bg-blue-500"></span>
-                {{ role }}
+                {{ role() || 'Usuario Desconocido' }}
               </span>
               <button routerLink="/dashboard/perfil" class="text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2" title="Mi Perfil">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
@@ -71,9 +72,9 @@ import { AuthService } from '../../core/services/auth.service';
                 </div>
               }
 
-              <!-- Card 2 -->
-              @if (hasPermiso('Ver Mantenimientos')) {
-                <div class="bg-white border-2 border-dashed border-gray-200 rounded-xl p-6 hover:border-purple-400 hover:bg-purple-50 transition-colors cursor-pointer group">
+              <!-- Card 2: Mantenimientos (Taller y Mecánico) -->
+              @if (hasPermiso('Ver Mantenimientos') || role() === 'Taller' || role() === 'Mecanico') {
+                <div routerLink="/dashboard/mantenimientos" class="bg-white border-2 border-dashed border-gray-200 rounded-xl p-6 hover:border-purple-400 hover:bg-purple-50 transition-colors cursor-pointer group">
                   <div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center mb-4 group-hover:bg-purple-600 group-hover:text-white transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 19.5l-4.5-4.5M10.5 19.5a9 9 0 100-18 9 9 0 000 18z" />
@@ -98,7 +99,7 @@ import { AuthService } from '../../core/services/auth.service';
               }
 
               <!-- Card 4 -->
-              @if (hasPermiso('Gestionar Mecanicos') || role === 'Taller') {
+              @if (hasPermiso('Gestionar Mecanicos') || role() === 'Taller') {
                 <div routerLink="/dashboard/mecanicos" class="bg-white border-2 border-dashed border-gray-200 rounded-xl p-6 hover:border-orange-400 hover:bg-orange-50 transition-colors cursor-pointer group">
                   <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-lg flex items-center justify-center mb-4 group-hover:bg-orange-600 group-hover:text-white transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -111,7 +112,7 @@ import { AuthService } from '../../core/services/auth.service';
               }
 
               <!-- Card: Solicitudes Pendientes — visible para Taller -->
-              @if (role === 'Taller') {
+              @if (role() === 'Taller') {
                 <div routerLink="/dashboard/solicitudes-pendientes" class="bg-white border-2 border-dashed border-gray-200 rounded-xl p-6 hover:border-cyan-400 hover:bg-cyan-50 transition-colors cursor-pointer group">
                   <div class="w-12 h-12 bg-cyan-100 text-cyan-600 rounded-lg flex items-center justify-center mb-4 group-hover:bg-cyan-600 group-hover:text-white transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -159,7 +160,7 @@ export class DashboardComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
   
-  role = this.authService.getRole() || 'Usuario Desconocido';
+  role = toSignal(this.authService.currentUserRole$, { initialValue: this.authService.getRole() });
 
   isHomePage() {
     return this.router.url === '/dashboard';

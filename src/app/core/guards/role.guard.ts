@@ -27,7 +27,7 @@ export const roleGuard: CanActivateFn = (route, state) => {
     }
   } else {
     // Si no exige permiso especial particular pero está logueado y llegamos aquí permitimos (ej. el padre Dashboard vacio)
-    if (role === 'Taller') {
+    if (role === 'Taller' || role === 'Mecanico') {
       return true;
     }
   }

@@ -13,6 +13,7 @@ import { MecanicosListComponent } from './features/mecanicos/mecanicos-list/meca
 import { BitacoraListComponent } from './features/bitacora/bitacora-list/bitacora-list.component';
 import { PerfilComponent } from './features/perfil/perfil.component';
 import { SolicitudesPendientesComponent } from './features/solicitudes-pendientes/solicitudes-pendientes.component';
+import { MantenimientosComponent } from './features/mantenimientos/mantenimientos.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -29,7 +30,8 @@ export const routes: Routes = [
       { path: 'mecanicos', component: MecanicosListComponent, data: { requiredPermiso: 'Gestionar Mecanicos' } },
       { path: 'bitacora', component: BitacoraListComponent, data: { requiredPermiso: 'Ver Bitacora' } },
       { path: 'perfil', component: PerfilComponent },
-      { path: 'solicitudes-pendientes', component: SolicitudesPendientesComponent }
+      { path: 'solicitudes-pendientes', component: SolicitudesPendientesComponent },
+      { path: 'mantenimientos', component: MantenimientosComponent }
     ]
   },
   { path: '', component: LandingComponent, pathMatch: 'full' },

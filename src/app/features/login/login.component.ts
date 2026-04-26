@@ -38,10 +38,10 @@ export class LoginComponent {
     this.authService.login(correo, password).subscribe({
       next: () => {
         const role = this.authService.getRole();
-        if (role === 'Administrador' || role === 'Taller') {
+        if (role === 'Administrador' || role === 'Taller' || role === 'Mecanico') {
           this.router.navigate(['/dashboard']);
         } else {
-          this.error = "Acceso denegado. Solo Administradores y Talleres pueden usar esta plataforma.";
+          this.error = "Acceso denegado. Los conductores deben ingresar mediante la aplicación móvil.";
           this.authService.logout();
         }
         this.isLoading = false;
