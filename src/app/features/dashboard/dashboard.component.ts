@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, RouterOutlet, Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { ProfileService, ProfileData } from '../../core/services/profile.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
@@ -51,10 +52,35 @@ import { toSignal } from '@angular/core/rxjs-interop';
         
         @if (isHomePage()) {
           <div class="bg-white overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:rounded-2xl border border-gray-100">
-            <div class="px-4 py-8 sm:px-10 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
-            <h1 class="text-3xl leading-tight font-extrabold text-gray-900">Panel de Control</h1>
-            <p class="mt-2 max-w-2xl text-lg text-gray-500">Bienvenido al área protegida. Aquí puedes configurar y visualizar los datos del sistema dependiendo de tu nivel de acceso.</p>
-          </div>
+            <div class="px-4 py-8 sm:px-10 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div>
+                <h1 class="text-3xl leading-tight font-extrabold text-gray-900">Panel de Control</h1>
+                <p class="mt-2 max-w-2xl text-lg text-gray-500">Bienvenido al área protegida. Aquí puedes configurar y visualizar los datos del sistema dependiendo de tu nivel de acceso.</p>
+              </div>
+
+              <!-- Workshop Balance Card Quick View -->
+              @if (role() === 'Taller' && profile()) {
+                <div class="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-5 text-white shadow-xl min-w-[280px] animate-fade-in relative overflow-hidden group">
+                  <div class="absolute -right-6 -top-6 w-24 h-24 bg-white/10 rounded-full blur-2xl group-hover:bg-white/20 transition-all"></div>
+                  <div class="relative z-10">
+                    <div class="flex items-center gap-2 mb-1">
+                      <div class="w-2 h-2 rounded-full" [ngClass]="(profile()?.taller?.balance || 0) >= 0 ? 'bg-emerald-400' : 'bg-orange-400'"></div>
+                      <p class="text-xs font-bold text-blue-100 uppercase tracking-wider">Estado de Cuenta</p>
+                    </div>
+                    <div class="flex items-end gap-1">
+                      <span class="text-xl font-bold mb-1">$</span>
+                      <h3 class="text-4xl font-black tracking-tight">{{ profile()?.taller?.balance || 0 }}</h3>
+                    </div>
+                    <p class="text-[10px] text-blue-100 mt-2 flex items-center gap-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clip-rule="evenodd" />
+                      </svg>
+                      {{ (profile()?.taller?.balance || 0) >= 0 ? 'Monto a favor' : 'Deuda pendiente' }}
+                    </p>
+                  </div>
+                </div>
+              }
+            </div>
           
           <div class="px-4 py-8 sm:px-10 bg-white">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -172,9 +198,11 @@ import { toSignal } from '@angular/core/rxjs-interop';
 })
 export class DashboardComponent {
   private authService = inject(AuthService);
+  private profileService = inject(ProfileService);
   private router = inject(Router);
   
   role = toSignal(this.authService.currentUserRole$, { initialValue: this.authService.getRole() });
+  profile = toSignal(this.profileService.getProfile());
 
   isHomePage() {
     return this.router.url === '/dashboard';
