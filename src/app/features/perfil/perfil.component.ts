@@ -121,6 +121,26 @@ import * as L from 'leaflet';
 
             <!-- Taller Form -->
             @if (profile.rol_nombre === 'Taller') {
+              <div class="px-6 pt-5">
+                <div class="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl p-5 text-white shadow-lg flex items-center justify-between">
+                  <div>
+                    <p class="text-sm font-medium text-blue-100 mb-1">Balance Actual</p>
+                    <h3 class="text-3xl font-black"><span>$</span>{{ profile.taller?.balance || 0 }}</h3>
+                    <p class="text-xs text-blue-100 mt-1">
+                      @if ((profile.taller?.balance || 0) >= 0) {
+                        Monto a favor (por comisiones y pagos por Stripe)
+                      } @else {
+                        Deuda pendiente a la plataforma (por pagos en efectivo)
+                      }
+                    </p>
+                  </div>
+                  <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
               <form [formGroup]="tallerForm" class="p-6 space-y-5">
                 <div>
                   <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 pl-1">Nombre del Taller</label>
@@ -177,6 +197,42 @@ import * as L from 'leaflet';
                   <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 pl-1">Fecha de Nacimiento</label>
                   <input type="date" formControlName="Fechanac"
                     class="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl px-4 py-3 focus:ring-2 focus:ring-purple-500/40 focus:border-purple-500 transition-all font-medium">
+                </div>
+              </form>
+            }
+
+            <!-- Mecanico Form -->
+            @if (profile.rol_nombre === 'Mecanico') {
+              <form [formGroup]="mecanicoForm" class="p-6 space-y-5">
+                <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                  <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 pl-1">Disponibilidad</label>
+                  <div class="flex items-center gap-3">
+                    <button type="button" (click)="toggleEstadoMecanico('Disponible')" 
+                            [class.ring-2]="mecanicoForm.value.Estado === 'Disponible'"
+                            [class.ring-emerald-500]="mecanicoForm.value.Estado === 'Disponible'"
+                            class="flex-1 py-2 px-4 rounded-lg font-bold text-sm bg-white border border-emerald-200 text-emerald-700 hover:bg-emerald-50 transition-all">
+                      Disponible
+                    </button>
+                    <button type="button" (click)="toggleEstadoMecanico('Ocupado')"
+                            [class.ring-2]="mecanicoForm.value.Estado === 'Ocupado'"
+                            [class.ring-rose-500]="mecanicoForm.value.Estado === 'Ocupado'"
+                            class="flex-1 py-2 px-4 rounded-lg font-bold text-sm bg-white border border-rose-200 text-rose-700 hover:bg-rose-50 transition-all">
+                      Ocupado
+                    </button>
+                  </div>
+                  <p class="text-[10px] text-gray-500 mt-2">Ponte como Ocupado para no recibir nuevas asignaciones temporales.</p>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mt-4">
+                  <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 pl-1">Nombre</label>
+                    <input type="text" formControlName="Nombre" readonly
+                      class="w-full bg-gray-100 border border-gray-200 text-gray-500 rounded-xl px-4 py-3 cursor-not-allowed">
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 pl-1">Apellidos</label>
+                    <input type="text" formControlName="Apellidos" readonly
+                      class="w-full bg-gray-100 border border-gray-200 text-gray-500 rounded-xl px-4 py-3 cursor-not-allowed">
+                  </div>
                 </div>
               </form>
             }
@@ -265,6 +321,7 @@ export class PerfilComponent implements OnInit, AfterViewInit, OnDestroy {
   adminForm!: FormGroup;
   tallerForm!: FormGroup;
   conductorForm!: FormGroup;
+  mecanicoForm!: FormGroup;
 
   // Map
   private map: L.Map | null = null;
@@ -297,6 +354,11 @@ export class PerfilComponent implements OnInit, AfterViewInit, OnDestroy {
       Nombre: [''],
       Apellidos: [''],
       Fechanac: ['']
+    });
+    this.mecanicoForm = this.fb.group({
+      Nombre: [''],
+      Apellidos: [''],
+      Estado: ['']
     });
 
     this.loadProfile();
@@ -364,6 +426,19 @@ export class PerfilComponent implements OnInit, AfterViewInit, OnDestroy {
         Fechanac: this.profile.conductor.Fechanac || ''
       });
     }
+
+    if (this.profile.mecanico) {
+      this.mecanicoForm.patchValue({
+        Nombre: this.profile.mecanico.nombre || '',
+        Apellidos: this.profile.mecanico.apellidos || '',
+        Estado: this.profile.mecanico.estado || 'Disponible'
+      });
+    }
+  }
+
+  toggleEstadoMecanico(estado: string) {
+    this.mecanicoForm.patchValue({ Estado: estado });
+    this.mecanicoForm.markAsDirty();
   }
 
   initMap() {
@@ -467,6 +542,14 @@ export class PerfilComponent implements OnInit, AfterViewInit, OnDestroy {
       payload.conductor_apellidos = cond.Apellidos;
       if (cond.Fechanac) {
         payload.conductor_fechanac = cond.Fechanac;
+      }
+    }
+
+    // Mecanico data
+    if (this.profile.rol_nombre === 'Mecanico') {
+      const mec = this.mecanicoForm.value;
+      if (this.mecanicoForm.dirty) {
+         payload.mecanico_estado = mec.Estado;
       }
     }
 

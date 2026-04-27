@@ -13,6 +13,7 @@ export interface TallerProfile {
   Coordenadas: string | null;
   Cap: number | null;
   Capmax: number | null;
+  balance: number | null;
 }
 
 export interface ConductorProfile {
@@ -22,6 +23,14 @@ export interface ConductorProfile {
   Fechanac: string | null;
 }
 
+export interface MecanicoProfile {
+  id: number;
+  ci: number;
+  nombre: string;
+  apellidos: string;
+  estado: string;
+}
+
 export interface ProfileData {
   Id: number;
   Correo: string;
@@ -29,6 +38,7 @@ export interface ProfileData {
   administrador: AdminProfile | null;
   taller: TallerProfile | null;
   conductor: ConductorProfile | null;
+  mecanico: MecanicoProfile | null;
 }
 
 export interface ProfileUpdatePayload {
@@ -44,6 +54,7 @@ export interface ProfileUpdatePayload {
   conductor_nombre?: string;
   conductor_apellidos?: string;
   conductor_fechanac?: string;
+  mecanico_estado?: string;
 }
 
 export interface UbicacionPayload {

@@ -124,6 +124,20 @@ import { toSignal } from '@angular/core/rxjs-interop';
                 </div>
               }
 
+              <!-- Card: Mis Incidentes — visible para Conductor -->
+              @if (role() === 'Conductor') {
+                <div routerLink="/dashboard/mis-incidentes" class="bg-white border-2 border-dashed border-gray-200 rounded-xl p-6 hover:border-emerald-400 hover:bg-emerald-50 transition-colors cursor-pointer group">
+                  <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center mb-4 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                    </svg>
+                  </div>
+                  <h3 class="text-lg font-bold text-gray-900 group-hover:text-emerald-900">Mis Incidentes</h3>
+                  <p class="text-sm text-gray-500 mt-2">Ver el estado de tus siniestros reportados y realizar pagos.</p>
+                </div>
+              }
+
               <!-- Card 5: Bitacora — visible para todos -->
               <div routerLink="/dashboard/bitacora" class="bg-white border-2 border-dashed border-gray-200 rounded-xl p-6 hover:border-violet-400 hover:bg-violet-50 transition-colors cursor-pointer group">
                 <div class="w-12 h-12 bg-violet-100 text-violet-600 rounded-lg flex items-center justify-center mb-4 group-hover:bg-violet-600 group-hover:text-white transition-colors">

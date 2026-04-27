@@ -14,6 +14,8 @@ import { BitacoraListComponent } from './features/bitacora/bitacora-list/bitacor
 import { PerfilComponent } from './features/perfil/perfil.component';
 import { SolicitudesPendientesComponent } from './features/solicitudes-pendientes/solicitudes-pendientes.component';
 import { MantenimientosComponent } from './features/mantenimientos/mantenimientos.component';
+import { MisIncidentes } from './features/mis-incidentes/mis-incidentes';
+import { PagoSuccess } from './features/pagos/pago-success/pago-success';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -31,9 +33,12 @@ export const routes: Routes = [
       { path: 'bitacora', component: BitacoraListComponent, data: { requiredPermiso: 'Ver Bitacora' } },
       { path: 'perfil', component: PerfilComponent },
       { path: 'solicitudes-pendientes', component: SolicitudesPendientesComponent },
-      { path: 'mantenimientos', component: MantenimientosComponent }
+      { path: 'mantenimientos', component: MantenimientosComponent },
+      { path: 'mis-incidentes', component: MisIncidentes }
     ]
   },
+  { path: 'pagos/success', component: PagoSuccess },
+  { path: 'pagos/cancel', redirectTo: 'dashboard/mis-incidentes' },
   { path: '', component: LandingComponent, pathMatch: 'full' },
   { path: '**', redirectTo: '' }
 ];

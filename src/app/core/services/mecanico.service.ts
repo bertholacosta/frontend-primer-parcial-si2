@@ -10,6 +10,7 @@ export interface Mecanico {
   apellidos: string;
   fechanac?: number;
   taller_id?: number;
+  estado?: string;
 }
 
 export interface MecanicoRegistro {
@@ -28,6 +29,7 @@ export interface MecanicoUpdate {
   nombre?: string;
   apellidos?: string;
   fechanac?: number;
+  estado?: string;
 }
 
 @Injectable({
@@ -47,6 +49,10 @@ export class MecanicoService {
 
   updateMecanico(id: number, data: MecanicoUpdate): Observable<Mecanico> {
     return this.http.put<Mecanico>(`${this.apiUrl}/${id}`, data);
+  }
+
+  updateEstado(id: number, estado: string): Observable<Mecanico> {
+    return this.http.put<Mecanico>(`${this.apiUrl}/${id}`, { estado });
   }
 
   deleteMecanico(id: number): Observable<void> {

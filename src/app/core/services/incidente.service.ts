@@ -56,6 +56,7 @@ export interface IncidenteDetalle {
   analisis_ia?: AnalisisIAEnIncidente;
   distancia_km?: number;
   cotizaciones?: Cotizacion[];
+  mecanicos?: any[];
 }
 
 @Injectable({
@@ -91,5 +92,13 @@ export class IncidenteService {
 
   actualizarEstadoIncidente(incidenteId: number, estado: string): Observable<IncidenteDetalle> {
     return this.http.patch<IncidenteDetalle>(`${this.apiUrl}/${incidenteId}/estado-taller`, { estado });
+  }
+
+  asignarMecanicosIncidente(incidenteId: number, mecanicoIds: number[]): Observable<IncidenteDetalle> {
+    return this.http.post<IncidenteDetalle>(`${this.apiUrl}/${incidenteId}/asignar-mecanicos`, { mecanico_ids: mecanicoIds });
+  }
+
+  getMisIncidentes(): Observable<IncidenteDetalle[]> {
+    return this.http.get<IncidenteDetalle[]>(`${this.apiUrl}/mis-incidentes`);
   }
 }
