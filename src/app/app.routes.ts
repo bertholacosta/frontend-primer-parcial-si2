@@ -16,6 +16,7 @@ import { SolicitudesPendientesComponent } from './features/solicitudes-pendiente
 import { MantenimientosComponent } from './features/mantenimientos/mantenimientos.component';
 import { MisIncidentes } from './features/mis-incidentes/mis-incidentes';
 import { PagoSuccess } from './features/pagos/pago-success/pago-success';
+import { ReportesComponent } from './features/reportes/reportes.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -34,7 +35,8 @@ export const routes: Routes = [
       { path: 'perfil', component: PerfilComponent },
       { path: 'solicitudes-pendientes', component: SolicitudesPendientesComponent },
       { path: 'mantenimientos', component: MantenimientosComponent },
-      { path: 'mis-incidentes', component: MisIncidentes }
+      { path: 'mis-incidentes', component: MisIncidentes },
+      { path: 'reportes', component: ReportesComponent }
     ]
   },
   { path: 'pagos/success', component: PagoSuccess },

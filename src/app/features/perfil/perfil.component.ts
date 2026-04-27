@@ -2,6 +2,7 @@ import { Component, inject, OnInit, AfterViewInit, OnDestroy } from '@angular/co
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ProfileService, ProfileData } from '../../core/services/profile.service';
+import { IncidenteService, ServicioTallerOut } from '../../core/services/incidente.service';
 import * as L from 'leaflet';
 
 @Component({
@@ -170,6 +171,43 @@ import * as L from 'leaflet';
                     class="w-full bg-gray-100 border border-gray-200 text-gray-600 rounded-xl px-4 py-3 font-medium cursor-not-allowed"
                     placeholder="Selecciona en el mapa abajo">
                 </div>
+
+                <!-- ─── SERVICIOS DEL TALLER ─── -->
+                <div class="border-t border-gray-100 pt-5 mt-5">
+                  <div class="flex items-center justify-between mb-3">
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest pl-1">Servicios Ofrecidos</label>
+                  </div>
+                  
+                  <div class="flex flex-wrap gap-2 mb-4">
+                    @for (svc of misServicios; track svc.id) {
+                      <div class="bg-blue-50 text-blue-700 px-3 py-1.5 rounded-full text-sm font-medium border border-blue-200 flex items-center gap-2">
+                        {{ svc.nombre }}
+                        <button type="button" (click)="eliminarServicio(svc.id)" class="text-blue-400 hover:text-red-500 transition-colors focus:outline-none">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                          </svg>
+                        </button>
+                      </div>
+                    } @empty {
+                      <p class="text-sm text-gray-400 italic">No tienes servicios configurados. Agrega uno para destacar tu taller.</p>
+                    }
+                  </div>
+
+                  <div class="flex gap-2">
+                    <select #selectServicio class="flex-1 bg-gray-50 border border-gray-200 text-gray-900 rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 transition-all font-medium">
+                      <option value="">-- Seleccionar servicio --</option>
+                      @for (opcion of catalogServiciosDisponibles; track opcion) {
+                        <option [value]="opcion">{{ opcion }}</option>
+                      }
+                    </select>
+                    <button type="button" (click)="agregarServicio(selectServicio.value); selectServicio.value=''"
+                      [disabled]="!selectServicio.value"
+                      class="bg-blue-100 text-blue-700 px-4 py-2 rounded-xl font-bold hover:bg-blue-200 transition-colors disabled:opacity-50">
+                      Agregar
+                    </button>
+                  </div>
+                </div>
+
               </form>
             }
 
@@ -308,6 +346,7 @@ import * as L from 'leaflet';
 })
 export class PerfilComponent implements OnInit, AfterViewInit, OnDestroy {
   private profileService = inject(ProfileService);
+  private incidenteService = inject(IncidenteService);
   private fb = inject(FormBuilder);
 
   profile: ProfileData | null = null;
@@ -328,6 +367,15 @@ export class PerfilComponent implements OnInit, AfterViewInit, OnDestroy {
   private marker: L.Marker | null = null;
   mapDirty = false;
   private selectedCoords: string | null = null;
+
+  // Services
+  misServicios: ServicioTallerOut[] = [];
+  catalogoServicios: string[] = [];
+
+  get catalogServiciosDisponibles(): string[] {
+    const nombresActuales = this.misServicios.map(s => s.nombre);
+    return this.catalogoServicios.filter(s => !nombresActuales.includes(s));
+  }
 
   get avatarInitial(): string {
     if (!this.profile) return '?';
@@ -385,6 +433,7 @@ export class PerfilComponent implements OnInit, AfterViewInit, OnDestroy {
         // Initialize map after a short delay to ensure DOM is ready
         if (data.rol_nombre === 'Taller') {
           setTimeout(() => this.initMap(), 100);
+          this.loadServicios();
         }
       },
       error: () => {
@@ -439,6 +488,42 @@ export class PerfilComponent implements OnInit, AfterViewInit, OnDestroy {
   toggleEstadoMecanico(estado: string) {
     this.mecanicoForm.patchValue({ Estado: estado });
     this.mecanicoForm.markAsDirty();
+  }
+
+  loadServicios() {
+    this.incidenteService.getCatalogoServicios().subscribe(cat => {
+      this.catalogoServicios = cat;
+    });
+    this.incidenteService.getMisServicios().subscribe(mis => {
+      this.misServicios = mis;
+    });
+  }
+
+  agregarServicio(nombre: string) {
+    if (!nombre) return;
+    this.incidenteService.agregarServicio(nombre).subscribe({
+      next: (nuevoSvc) => {
+        this.misServicios.push(nuevoSvc);
+        this.successMessage = `Servicio '${nombre}' agregado.`;
+        this.autoClearSuccess();
+      },
+      error: (err) => {
+        this.errorMessage = err.error?.detail || 'Error al agregar servicio.';
+      }
+    });
+  }
+
+  eliminarServicio(id: number) {
+    this.incidenteService.eliminarServicio(id).subscribe({
+      next: () => {
+        this.misServicios = this.misServicios.filter(s => s.id !== id);
+        this.successMessage = 'Servicio eliminado.';
+        this.autoClearSuccess();
+      },
+      error: (err) => {
+        this.errorMessage = err.error?.detail || 'Error al eliminar servicio.';
+      }
+    });
   }
 
   initMap() {

@@ -175,16 +175,29 @@ import { toSignal } from '@angular/core/rxjs-interop';
                 <p class="text-sm text-gray-500 mt-2">Consultar el historial de actividades y operaciones realizadas en el sistema.</p>
               </div>
 
-              <!-- Card 6: Mi Perfil — visible para todos -->
+              <!-- Card: Mi Perfil — visible para todos -->
               <div routerLink="/dashboard/perfil" class="bg-white border-2 border-dashed border-gray-200 rounded-xl p-6 hover:border-indigo-400 hover:bg-indigo-50 transition-colors cursor-pointer group">
                 <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center mb-4 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                   </svg>
                 </div>
                 <h3 class="text-lg font-bold text-gray-900 group-hover:text-indigo-900">Mi Perfil</h3>
                 <p class="text-sm text-gray-500 mt-2">Gestionar tu información personal, contraseña y configuración de cuenta.</p>
               </div>
+
+              <!-- Card: Reportes — visible para Taller -->
+              @if (role() === 'Taller') {
+                <div routerLink="/dashboard/reportes" class="bg-white border-2 border-dashed border-gray-200 rounded-xl p-6 hover:border-rose-400 hover:bg-rose-50 transition-colors cursor-pointer group">
+                  <div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-lg flex items-center justify-center mb-4 group-hover:bg-rose-600 group-hover:text-white transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5M9 11l3 3L22 4" />
+                    </svg>
+                  </div>
+                  <h3 class="text-lg font-bold text-gray-900 group-hover:text-rose-900">Reportes y Estadísticas</h3>
+                  <p class="text-sm text-gray-500 mt-2">Analiza tus ingresos, volumen de servicios y tendencias mensuales.</p>
+                </div>
+              }
 
             </div>
           </div>

@@ -1,12 +1,13 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { IncidenteService, IncidenteDetalle, Cotizacion } from '../../core/services/incidente.service';
 import { PagoService } from '../../core/services/pago.service';
 
 @Component({
   selector: 'app-mis-incidentes',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './mis-incidentes.html',
   styleUrl: './mis-incidentes.css'
 })
@@ -17,6 +18,10 @@ export class MisIncidentes implements OnInit {
   incidentes: IncidenteDetalle[] = [];
   isLoading = true;
   isProcessingPago = false;
+
+  /** Mapa incidente.id → texto nuevo que el conductor escribe */
+  reintentarTexto: Record<number, string> = {};
+  isReintentando = false;
 
   ngOnInit() {
     this.cargarIncidentes();
@@ -45,6 +50,31 @@ export class MisIncidentes implements OnInit {
 
   getCotizacionAceptada(incidente: IncidenteDetalle): Cotizacion | undefined {
     return incidente.cotizaciones?.find(c => c.estado === 'Aceptada');
+  }
+
+  /** ¿La IA marcó este incidente como información insuficiente? */
+  necesitaReanalisis(incidente: IncidenteDetalle): boolean {
+    return incidente.analisis_ia?.informacion_valida === false;
+  }
+
+  reintentarAnalisis(incidente: IncidenteDetalle) {
+    const texto = (this.reintentarTexto[incidente.id] || '').trim();
+    if (!texto) return;
+
+    this.isReintentando = true;
+    this.incidenteService.reintentarAnalisis(incidente.id, texto).subscribe({
+      next: (actualizado) => {
+        const idx = this.incidentes.findIndex(i => i.id === incidente.id);
+        if (idx !== -1) this.incidentes[idx] = actualizado;
+        this.reintentarTexto[incidente.id] = '';
+        this.isReintentando = false;
+      },
+      error: (err) => {
+        console.error('Error al reintentar análisis:', err);
+        alert(err.error?.detail || 'Error al procesar el análisis.');
+        this.isReintentando = false;
+      }
+    });
   }
 
   pagarConStripe(incidenteId: number) {

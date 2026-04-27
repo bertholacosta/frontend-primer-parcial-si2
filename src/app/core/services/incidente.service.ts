@@ -15,12 +15,19 @@ export interface TallerEnIncidente {
   Nombre: string;
   Direccion: string;
   Coordenadas?: string;
+  servicios?: ServicioTallerOut[];
+}
+
+export interface ServicioTallerOut {
+  id: number;
+  nombre: string;
 }
 
 export interface AnalisisIAEnIncidente {
   Clasificacion?: string;
   NivelPrioridad?: string;
   Resumen?: string;
+  informacion_valida?: boolean;
 }
 
 export interface Cotizacion {
@@ -100,5 +107,26 @@ export class IncidenteService {
 
   getMisIncidentes(): Observable<IncidenteDetalle[]> {
     return this.http.get<IncidenteDetalle[]>(`${this.apiUrl}/mis-incidentes`);
+  }
+
+  reintentarAnalisis(incidenteId: number, nuevaDescripcion: string): Observable<IncidenteDetalle> {
+    return this.http.post<IncidenteDetalle>(`${this.apiUrl}/${incidenteId}/reintentar-analisis`, { nueva_descripcion: nuevaDescripcion });
+  }
+
+  // --- Gestión de Servicios de Taller ---
+  getCatalogoServicios(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/servicios/catalogo`);
+  }
+
+  getMisServicios(): Observable<ServicioTallerOut[]> {
+    return this.http.get<ServicioTallerOut[]>(`${this.apiUrl}/mis-servicios`);
+  }
+
+  agregarServicio(nombre: string): Observable<ServicioTallerOut> {
+    return this.http.post<ServicioTallerOut>(`${this.apiUrl}/mis-servicios`, { nombre });
+  }
+
+  eliminarServicio(servicioId: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/mis-servicios/${servicioId}`);
   }
 }
